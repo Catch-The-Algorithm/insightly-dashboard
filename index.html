@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Insightly Dashboard</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      background-color: #f4f4f4;
+      color: #333;
+    }
+
+    .dashboard-container {
+      display: flex;
+      height: 100vh;
+      flex-direction: row;
+    }
+
+    .sidebar {
+      width: 220px;
+      background-color: #1f2937;
+      color: white;
+      padding: 20px;
+      flex-shrink: 0;
+    }
+
+    .sidebar h2 {
+      margin-bottom: 30px;
+      font-size: 22px;
+    }
+
+    .sidebar ul {
+      list-style: none;
+    }
+
+    .sidebar ul li {
+      padding: 10px 0;
+      cursor: pointer;
+    }
+
+    .sidebar ul li:hover {
+      text-decoration: underline;
+    }
+
+    .main-content {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+      text-align: center;
+    }
+
+    .card h3 {
+      margin-bottom: 10px;
+      color: #4f46e5;
+    }
+
+    .chart-section {
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+      margin-bottom: 30px;
+    }
+
+    .data-table {
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f9fafb;
+    }
+
+    @media (max-width: 1024px) {
+      .cards {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .dashboard-container {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+      }
+
+      .sidebar nav ul {
+        display: flex;
+        flex-direction: row;
+        gap: 20px;
+      }
+
+      .cards {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .topbar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .sidebar h2 {
+        font-size: 18px;
+      }
+
+      .sidebar ul li {
+        font-size: 14px;
+      }
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="dashboard-container">
+    <aside class="sidebar">
+      <h2>Insightly</h2>
+      <nav>
+        <ul>
+          <li>Overview</li>
+          <li>Reports</li>
+          <li>Analytics</li>
+          <li>Settings</li>
+        </ul>
+      </nav>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <h1>Dashboard</h1>
+        <div class="user-info">Hello, User</div>
+      </header>
+
+      <section class="cards">
+        <div class="card">
+          <h3>Users</h3>
+          <p>2,390</p>
+        </div>
+        <div class="card">
+          <h3>Sales</h3>
+          <p>$12,400</p>
+        </div>
+        <div class="card">
+          <h3>Visits</h3>
+          <p>8,420</p>
+        </div>
+        <div class="card">
+          <h3>Revenue</h3>
+          <p>$5,200</p>
+        </div>
+      </section>
+
+      <section class="chart-section">
+        <canvas id="trafficChart"></canvas>
+      </section>
+
+      <section class="data-table">
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Role</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Jane Doe</td>
+              <td>Admin</td>
+              <td>Active</td>
+            </tr>
+            <tr>
+              <td>John Smith</td>
+              <td>Editor</td>
+              <td>Pending</td>
+            </tr>
+            <tr>
+              <td>Mary Johnson</td>
+              <td>Viewer</td>
+              <td>Inactive</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const ctx = document.getElementById('trafficChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        datasets: [{
+          label: 'Traffic',
+          data: [120, 190, 300, 500, 200, 300, 450],
+          borderColor: '#4f46e5',
+          backgroundColor: 'rgba(79, 70, 229, 0.1)',
+          tension: 0.4
+        }]
+      }
+    });
+  </script>
+</body>
+</html>
