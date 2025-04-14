@@ -15,6 +15,7 @@
       --shadow: rgba(0, 0, 0, 0.05);
       --hover: #374151;
       --active: #4f46e5;
+      --thead-bg: #f9fafb;
     }
 
     body.dark-mode {
@@ -24,6 +25,7 @@
       --shadow: rgba(255, 255, 255, 0.05);
       --hover: #4b5563;
       --active: #6366f1;
+      --thead-bg: #374151;
     }
 
     * {
@@ -175,7 +177,7 @@
     }
 
     th {
-      background-color: #f9fafb;
+      background-color: var(--thead-bg);
     }
 
     .table-actions {
