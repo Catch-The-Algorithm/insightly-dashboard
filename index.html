@@ -219,6 +219,17 @@
       gap: 10px;
     }
 
+    .table-responsive {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    table {
+      min-width: 600px; /* جدول به اندازه کافی پهن هست */
+      width: 100%;
+      border-collapse: collapse;
+    }
+
     .btn {
       padding: 6px 10px;
       border: none;
@@ -335,6 +346,7 @@
       </section>
 
       <section class="data-table">
+        <div class="table-responsive">
         <table>
           <thead>
             <tr>
@@ -357,6 +369,7 @@
             </tr>
           </tbody>
         </table>
+        </div>
       </section>
     </main>
   </div>
