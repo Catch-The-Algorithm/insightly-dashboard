@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Insightly Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     :root {
       --primary: #4f46e5;
@@ -43,7 +45,7 @@
 
     .dashboard-container {
       display: flex;
-      height: 100vh;
+      min-height: 100vh;
       flex-direction: row;
     }
 
@@ -53,6 +55,30 @@
       color: white;
       padding: 20px;
       flex-shrink: 0;
+    }
+
+    .sidebar.show {
+      transform: translateX(0);
+    }
+
+
+    .sidebar-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: 100vw;
+      background-color: rgba(0, 0, 0, 0.4);
+      z-index: 999;
+    }
+
+    .sidebar-overlay.hidden {
+      display: none;
+    }
+
+
+    .sidebar.hidden {
+      display: none;
     }
 
     .sidebar h2 {
@@ -96,6 +122,18 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 30px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .topbar .menu-toggle {
+      display: none;
+      background-color: var(--primary);
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 14px;
     }
 
     .dark-toggle {
@@ -122,7 +160,6 @@
       border-left: 5px solid var(--primary);
       border-radius: 10px;
       box-shadow: 0 4px 12px var(--shadow);
-      text-align: left;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -151,11 +188,7 @@
       border-radius: 10px;
       box-shadow: 0 0 10px var(--shadow);
       margin-bottom: 30px;
-    }
-
-    .chart-section canvas {
-      width: 100% !important;
-      height: auto !important;
+      height: 300px;
     }
 
     .data-table {
@@ -170,13 +203,14 @@
       border-collapse: collapse;
     }
 
-    th, td {
+    th,
+    td {
       padding: 12px;
       border-bottom: 1px solid #ddd;
       text-align: left;
     }
 
-    th {
+    thead {
       background-color: var(--thead-bg);
     }
 
@@ -194,14 +228,16 @@
       font-size: 12px;
     }
 
-    .btn.view { background-color: #3b82f6; }
-    .btn.edit { background-color: #10b981; }
-    .btn.delete { background-color: #ef4444; }
+    .btn.view {
+      background-color: #3b82f6;
+    }
 
-    @media (max-width: 1024px) {
-      .cards {
-        grid-template-columns: repeat(2, 1fr);
-      }
+    .btn.edit {
+      background-color: #10b981;
+    }
+
+    .btn.delete {
+      background-color: #ef4444;
     }
 
     @media (max-width: 768px) {
@@ -210,44 +246,39 @@
       }
 
       .sidebar {
-        width: 100%;
-        display: flex;
-        flex-direction: row;
-        justify-content: space-around;
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: 220px;
+        z-index: 1001;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
       }
 
-      .sidebar nav ul {
-        display: flex;
-        flex-direction: row;
-        gap: 20px;
+      .sidebar.show {
+        transform: translateX(0);
+      }
+
+      .topbar .menu-toggle {
+        display: inline-block;
+      }
+
+      .sidebar-overlay {
+        display: block;
       }
 
       .cards {
         grid-template-columns: 1fr;
       }
     }
-
-    @media (max-width: 480px) {
-      .topbar {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-      }
-
-      .sidebar h2 {
-        font-size: 18px;
-      }
-
-      .sidebar ul li {
-        font-size: 14px;
-      }
-    }
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
   <div class="dashboard-container">
-    <aside class="sidebar">
+    <aside class="sidebar" id="sidebar">
+
       <h2>Insightly</h2>
       <nav>
         <ul>
@@ -257,10 +288,13 @@
           <li><i class="fa-solid fa-gear"></i> Settings</li>
         </ul>
       </nav>
+
     </aside>
+    <div class="sidebar-overlay hidden" id="sidebarOverlay" onclick="toggleSidebar()"></div>
 
     <main class="main-content">
       <header class="topbar">
+        <button class="menu-toggle" onclick="toggleSidebar()">☰ Menu</button>
         <h1>Dashboard</h1>
         <button class="dark-toggle" onclick="toggleDarkMode()">Toggle Dark Mode</button>
       </header>
@@ -321,26 +355,6 @@
                 <button class="btn delete"><i class="fa fa-trash"></i></button>
               </td>
             </tr>
-            <tr>
-              <td>John Smith</td>
-              <td>Editor</td>
-              <td>Pending</td>
-              <td class="table-actions">
-                <button class="btn view"><i class="fa fa-eye"></i></button>
-                <button class="btn edit"><i class="fa fa-pen"></i></button>
-                <button class="btn delete"><i class="fa fa-trash"></i></button>
-              </td>
-            </tr>
-            <tr>
-              <td>Mary Johnson</td>
-              <td>Viewer</td>
-              <td>Inactive</td>
-              <td class="table-actions">
-                <button class="btn view"><i class="fa fa-eye"></i></button>
-                <button class="btn edit"><i class="fa fa-pen"></i></button>
-                <button class="btn delete"><i class="fa fa-trash"></i></button>
-              </td>
-            </tr>
           </tbody>
         </table>
       </section>
@@ -351,6 +365,16 @@
     function toggleDarkMode() {
       document.body.classList.toggle('dark-mode');
     }
+
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      sidebar.classList.toggle('show');
+      overlay.classList.toggle('hidden');
+    }
+
+
+
 
     const ctx = document.getElementById('trafficChart').getContext('2d');
     new Chart(ctx, {
@@ -372,4 +396,5 @@
     });
   </script>
 </body>
+
 </html>
